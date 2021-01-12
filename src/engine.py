@@ -1,6 +1,9 @@
 
 from tqdm import tqdm
-
+import model
+import torch 
+import torch.nn as nn 
+criterion = nn.BCEWithLogitsLoss()
 
 def train(dataloader, model, optimizer, device):
     model.train()
