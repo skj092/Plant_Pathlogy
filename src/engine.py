@@ -3,6 +3,7 @@ from tqdm import tqdm
 import model
 import torch 
 import torch.nn as nn 
+import numpy as np 
 criterion = nn.BCEWithLogitsLoss()
 
 def train(dataloader, model, optimizer, device):
@@ -60,3 +61,17 @@ def evaluate(data_loader, model, device):
             else:
                 val_preds = torch.cat((val_preds, preds), dim=0)
         return val_loss
+
+def predict(dataloader, model, device):
+    model.eval()
+    final_prediction = []
+    tk0 = tqdm(dataloader, desc='Predicting')
+    with torch.no_grad():
+        for step, batch in enumerate(tk0):
+            images = batch[0]
+            images = images.to(device, dtype=torch.float)
+            model = model.to(device)
+            prediction = model(images)
+            final_prediction.append(prediction)
+    predictions = [item for sublist in final_prediction for item in sublist]
+    return np.array(predictions)

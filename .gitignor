@@ -141,5 +141,7 @@ cython_debug/
 input/
 models/
 
-# data and files
+# data and file
+*.jpg
 *.csv
+*.pt
