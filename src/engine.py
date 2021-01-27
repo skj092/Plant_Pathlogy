@@ -4,7 +4,7 @@ import model
 import torch 
 import torch.nn as nn 
 import numpy as np 
-criterion = nn.BCEWithLogitsLoss()
+criterion = nn.CrossEntropyLoss()
 
 def train(dataloader, model, optimizer, device):
     model.train()
@@ -15,14 +15,11 @@ def train(dataloader, model, optimizer, device):
         targets = batch[1]
         
         inputs = inputs.to(device, dtype=torch.float)
-        targets = targets.to(device, dtype=torch.float)
+        targets = targets.to(device, dtype=torch.long)
         
         optimizer.zero_grad()
         outputs = model(inputs)
-        losses = []
-        for i in range(4):
-            losses.append(criterion(outputs[i], targets[:,i]))
-        loss = losses[0]+losses[1]+losses[2]+losses[3]
+        loss = criterion(outputs, targets)
         loss.backward()
         tr_loss += loss.item()
         optimizer.step()

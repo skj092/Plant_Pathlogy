@@ -145,3 +145,4 @@ models/
 *.jpg
 *.csv
 *.pt
+*.zip
