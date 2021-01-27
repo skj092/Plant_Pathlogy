@@ -64,14 +64,16 @@ def evaluate(data_loader, model, device):
 
 def predict(dataloader, model, device):
     model.eval()
-    final_prediction = []
-    tk0 = tqdm(dataloader, desc='Predicting')
-    with torch.no_grad():
-        for step, batch in enumerate(tk0):
-            images = batch[0]
-            images = images.to(device, dtype=torch.float)
-            model = model.to(device)
-            prediction = model(images)
-            final_prediction.append(prediction)
-    predictions = [item for sublist in final_prediction for item in sublist]
-    return np.array(predictions)
+    tk0 = tqdm(dataloader, desc="Predict")
+    test_preds = None
+    for step, batch in enumerate(tk0):
+        images = batch[0]
+        images = images.to(device, dtype=torch.float)
+        with torch.no_grad():
+            outputs = model(images)
+            preds = torch.sigmoid(torch.stack(outputs).permute(1, 0, 2).cpu().squeeze(-1))
+            if test_preds is None:
+                test_preds = preds
+            else:
+                test_preds = torch.cat((test_preds, preds), dim=0)
+    return test_preds

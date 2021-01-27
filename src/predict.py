@@ -7,8 +7,11 @@ from torch.utils.data import DataLoader
 from model import PlantModel
 import torch 
 import numpy as np 
+from tqdm import tqdm
+
 
 if __name__=="__main__":
+    device = 'cuda'
     submission_df = pd.read_csv('input/sample_submission.csv')
 
     transforms_valid = albumentations.Compose([
@@ -22,7 +25,8 @@ if __name__=="__main__":
     # loading saved model
     model_inf = PlantModel(num_classes=[1, 1, 1, 1])
     model_inf.load_state_dict(torch.load('models/model.pt'))
-
+    model_inf = model_inf.to(device)
+    
     prediction = engine.predict(dataloader_test, model_inf, device='cuda')
-    submission_df[['healthy', 'multiple_diseases', 'rust', 'scab']] = prediction
+    submission_df[['healthy', 'multiple_diseases', 'rust', 'scab']] = prediction.numpy()
     submission_df.to_csv('submission.csv', index=False)
